@@ -89,11 +89,35 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void ThrowArgumentNullExceptionIfNull_Object()
+        public void ThrowArgumentNullExceptionIfNull_Object_ReferenceType()
         {
             try
             {
                 ThrowArgumentNullExceptionIfNull_Object(RefType);
+            }
+            catch
+            {
+            }
+        }
+
+        [Benchmark]
+        public void ThrowArgumentNullExceptionIfNull_Object_ValueType()
+        {
+            try
+            {
+                ThrowArgumentNullExceptionIfNull_Object(ValueType);
+            }
+            catch
+            {
+            }
+        }
+
+        [Benchmark]
+        public void ThrowArgumentNullExceptionIfNull_Object_NullableValueType()
+        {
+            try
+            {
+                ThrowArgumentNullExceptionIfNull_Object(NullableValueType);
             }
             catch
             {
