@@ -33,8 +33,6 @@ namespace Benchmarks
 
         public object RefType;
 
-        public int ValueType = 1;
-
         public int? NullableValueType;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -105,7 +103,7 @@ namespace Benchmarks
         {
             try
             {
-                ThrowArgumentNullExceptionIfNull_Object(ValueType);
+                ThrowArgumentNullExceptionIfNull_Object(42);
             }
             catch
             {
@@ -117,7 +115,8 @@ namespace Benchmarks
         {
             try
             {
-                ThrowArgumentNullExceptionIfNull_Object(NullableValueType);
+                var value = NullableValueType;
+                ThrowArgumentNullExceptionIfNull_Object(value);
             }
             catch
             {
@@ -141,7 +140,7 @@ namespace Benchmarks
         {
             try
             {
-                ThrowArgumentNullExceptionIfNull_Generic(ValueType);
+                ThrowArgumentNullExceptionIfNull_Generic(42);
             }
             catch
             {
@@ -153,7 +152,8 @@ namespace Benchmarks
         {
             try
             {
-                ThrowArgumentNullExceptionIfNull_Generic(NullableValueType);
+                var value = NullableValueType;
+                ThrowArgumentNullExceptionIfNull_Generic(value);
             }
             catch
             {
