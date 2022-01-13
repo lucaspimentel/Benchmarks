@@ -14,7 +14,6 @@ namespace Benchmarks;
 public class StringValues_BoxingVsToArray
 {
     private StringValues values = new("foo");
-    private IEnumerable<string> temp;
 
     [Benchmark]
     public void Box()
