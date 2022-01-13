@@ -12,6 +12,7 @@ namespace Benchmarks;
 public class Iterating
 {
     private readonly string[] _array = { "one" };
+    private readonly List<string> _list = new() { "one" };
 
     [Benchmark]
     public string Enumerable()
@@ -51,6 +52,7 @@ public class Iterating
                 yield return value;
             }
         }
+
         IEnumerable<string> values = GetIterator();
         string result = null;
 
@@ -62,11 +64,10 @@ public class Iterating
         return result;
     }
 
-
     [Benchmark]
     public string StringEnumerable_Enumerable()
     {
-        var values = new StringEnumerable((IEnumerable<string>)_array);
+        var values = new StringEnumerable(_list);
         string result = null;
 
         foreach (var value in values)
