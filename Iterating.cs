@@ -44,6 +44,13 @@ public class Iterating
     [Benchmark]
     public string Iterator()
     {
+        IEnumerable<string> GetIterator()
+        {
+            foreach (var value in _array)
+            {
+                yield return value;
+            }
+        }
         IEnumerable<string> values = GetIterator();
         string result = null;
 
@@ -55,13 +62,6 @@ public class Iterating
         return result;
     }
 
-    private IEnumerable<string> GetIterator()
-    {
-        foreach (var value in _array)
-        {
-            yield return value;
-        }
-    }
 
     [Benchmark]
     public string StringEnumerable_Enumerable()
