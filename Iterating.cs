@@ -6,7 +6,7 @@ using Datadog.Trace.Util;
 namespace Benchmarks;
 
 [SimpleJob(RuntimeMoniker.Net461)]
-//[SimpleJob(RuntimeMoniker.NetCoreApp31)]
+[SimpleJob(RuntimeMoniker.NetCoreApp31)]
 [MemoryDiagnoser]
 [DisassemblyDiagnoser]
 public class Iterating
@@ -28,10 +28,24 @@ public class Iterating
         return result;
     }
 
-    [Benchmark]
+    // [Benchmark]
     public string Array()
     {
         string[] values = _array;
+        string result = null;
+
+        foreach (var value in values)
+        {
+            result = value;
+        }
+
+        return result;
+    }
+
+    [Benchmark]
+    public string NewArrayOfOneAsEnumerable()
+    {
+        IEnumerable<string> values = new string[] { "one" };
         string result = null;
 
         foreach (var value in values)
