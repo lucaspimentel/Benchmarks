@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if StringEnumerable
+
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Datadog.Trace.Util;
@@ -148,3 +150,5 @@ public class Iterating
         return result;
     }
 }
+
+#endif
