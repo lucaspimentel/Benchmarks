@@ -1,39 +1,86 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
 namespace RegexNonBacktracking;
 
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net80)]
+// [SimpleJob(RuntimeMoniker.NetCoreApp31)]
 [MemoryDiagnoser]
+// [IterationsColumn]
 public class Benchmarks
 {
-    private const string OldRegexPattern = """
-                                           ((?i)(?:p(?:ass)?w(?:or)?d|pass(?:_?phrase)?|secret|(?:api_?|private_?|public_?|access_?|secret_?)key(?:_?id)?|token|consumer_?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\s|%20)*(?:=|%3D)[^&]+|(?:"|%22)(?:\s|%20)*(?::|%3A)(?:\s|%20)*(?:"|%22)(?:%2[^2]|%[^2]|[^"%])+(?:"|%22))|bearer(?:\s|%20)+[a-z0-9\._\-]|token(?::|%3A)[a-z0-9]{13}|gh[opsu]_[0-9a-zA-Z]{36}|ey[I-L](?:[\w=-]|%3D)+\.ey[I-L](?:[\w=-]|%3D)+(?:\.(?:[\w.+\/=-]|%3D|%2F|%2B)+)?|[\-]{5}BEGIN(?:[a-z\s]|%20)+PRIVATE(?:\s|%20)KEY[\-]{5}[^\-]+[\-]{5}END(?:[a-z\s]|%20)+PRIVATE(?:\s|%20)KEY|ssh-rsa(?:\s|%20)*(?:[a-z0-9\/\.+]|%2F|%5C|%2B){100,})
-                                           """;
+    private const string QueryStringShort = "password=123&" +
+                                            "pwd=123&" +
+                                            "pwdx=123&" +
+                                            "passphrase=123&" +
+                                            "passphrasex=123&" +
+                                            "signature=123&" +
+                                            "signaturex=123&" +
+                                            "authentication=123&" +
+                                            "authenticationx=123&" +
+                                            "authorization=123&" +
+                                            "authorizationx=123&" +
+                                            "query1=query%7Bhero%7Bname+appearsIn%7D%7D&";
 
-    private const string NewRegexPattern = """
-                                           (?:(?:"|%22)?)(?:(?:old[-_]?|new[-_]?)?p(?:ass)?w(?:or)?d(?:1|2)?|pass(?:[-_]?phrase)?|secret|(?:api[-_]?|private[-_]?|public[-_]?|access[-_]?|secret[-_]?|app(?:lication)?[-_]?)key(?:[-_]?id)?|token|consumer[-_]?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\s|%20)*(?:=|%3D)[^&]+|(?:"|%22)(?:\s|%20)*(?::|%3A)(?:\s|%20)*(?:"|%22)(?:%2[^2]|%[^2]|[^"%])+(?:"|%22))|(?:bearer(?:\s|%20)+[a-z0-9._\-]+|token(?::|%3A)[a-z0-9]{13}|gh[opsu]_[0-9a-zA-Z]{36}|ey[I-L](?:[\w=-]|%3D)+\.ey[I-L](?:[\w=-]|%3D)+(?:\.(?:[\w.+/=-]|%3D|%2F|%2B)+)?|-{5}BEGIN(?:[a-z\s]|%20)+PRIVATE(?:\s|%20)KEY-{5}[^\-]+-{5}END(?:[a-z\s]|%20)+PRIVATE(?:\s|%20)KEY(?:-{5})?(?:\n|%0A)?|(?:ssh-(?:rsa|dss)|ecdsa-[a-z0-9]+-[a-z0-9]+)(?:\s|%20|%09)+(?:[a-z0-9/.+]|%2F|%5C|%2B){100,}(?:=|%3D)*(?:(?:\s|%20|%09)+[a-z0-9._-]+)?)
-                                           """;
+    private const string QueryStringLong =
+        "password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&password=123&pwd=123&pwdx=123&passphrase=123&passphrasex=123&signature=123&signaturex=123&authentication=123&authenticationx=123&authorization=123&authorizationx=123&query1=query%7Bhero%7Bname+appearsIn%7D%7D&";
 
-    private const RegexOptions Options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking;
+    private const string Replacement = "<redacted>";
+
+    // private Regex _defaultRegex;
+
+    // private Regex _experimentalRegex;
 
     [GlobalSetup]
     public void Setup()
     {
-        AppDomain.CurrentDomain.SetData("REGEX_NONBACKTRACKING_MAX_AUTOMATA_SIZE", 2000);
+        // System.AppDomain.CurrentDomain.SetData("REGEX_NONBACKTRACKING_MAX_AUTOMATA_SIZE", 2000);
+
+        // _defaultRegex = new Regex(QueryStringObfuscatorRegex.DefaultRegexPattern,
+        //     QueryStringObfuscatorRegex.DefaultOptions);
+        //
+        // _experimentalRegex = new Regex(QueryStringObfuscatorRegex.ExperimentalRegexPattern,
+        //     QueryStringObfuscatorRegex.DefaultOptions);
+    }
+
+    // [Benchmark]
+    // public string ReplaceDefaultRegex()
+    // {
+    //     return _defaultRegex.Replace(QueryStringShort, Replacement);
+    // }
+
+    // [Benchmark]
+    // public string ReplaceDefaultRegexLong()
+    // {
+    //     return _defaultRegex.Replace(QueryStringLong, Replacement);
+    // }
+
+    // [Benchmark]
+    // public string ReplaceExperimentalRegex()
+    // {
+    //     return _experimentalRegex.Replace(QueryStringShort, Replacement);
+    // }
+
+    // [Benchmark]
+    // public string ReplaceExperimentalRegexLong()
+    // {
+    //     return _experimentalRegex.Replace(QueryStringLong, Replacement);
+    // }
+
+    [Benchmark(Baseline = true)]
+    public string CompileDefaultRegex()
+    {
+        var regex = new Regex(QueryStringObfuscatorRegex.DefaultRegexPattern,
+            QueryStringObfuscatorRegex.DefaultOptions);
+        return regex.Replace("", Replacement);
     }
 
     [Benchmark]
-    public Regex OldRegexInit()
+    public string CompileExperimentalRegex()
     {
-        return new Regex(OldRegexPattern, Options);
-    }
-
-    [Benchmark]
-    public Regex NewRegexInit()
-    {
-        return new Regex(NewRegexPattern, Options);
+        var regex = new Regex(QueryStringObfuscatorRegex.ExperimentalRegexPattern,
+            QueryStringObfuscatorRegex.DefaultOptions);
+        return regex.Replace("", Replacement);
     }
 }

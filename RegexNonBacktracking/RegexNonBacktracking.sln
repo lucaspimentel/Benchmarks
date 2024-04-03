@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegexNonBacktracking", "RegexNonBacktracking.csproj", "{FF8C75F2-0C4A-492D-9011-4CD2C600627B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF8C75F2-0C4A-492D-9011-4CD2C600627B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8C75F2-0C4A-492D-9011-4CD2C600627B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8C75F2-0C4A-492D-9011-4CD2C600627B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8C75F2-0C4A-492D-9011-4CD2C600627B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {00995105-E5EA-465C-8868-CD03CA3363CE}
+	EndGlobalSection
+EndGlobal

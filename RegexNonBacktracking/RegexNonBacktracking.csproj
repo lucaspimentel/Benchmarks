@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFrameworks>net8.0;netcoreapp3.1</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <PlatformTarget>AnyCPU</PlatformTarget>
         <DebugType>pdbonly</DebugType>
@@ -10,9 +10,10 @@
         <Configuration>Release</Configuration>
         <IsPackable>false</IsPackable>
         <LangVersion>latest</LangVersion>
+        <nowarn>NETSDK1138</nowarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
-        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.2" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.12" />
     </ItemGroup>
 </Project>
