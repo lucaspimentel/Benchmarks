@@ -26,20 +26,20 @@ public class Benchmarks
         }
     }
 
-    [Benchmark]
-    public void Propagator1()
+    [Benchmark(Baseline = true)]
+    public void Before()
     {
         W3CBaggagePropagator1.CreateHeader(Baggage);
     }
 
-    [Benchmark]
-    public void Propagator2()
-    {
-        W3CBaggagePropagator2.CreateHeader(Baggage);
-    }
+    // [Benchmark]
+    // public void Propagator2()
+    // {
+    //     W3CBaggagePropagator2.CreateHeader(Baggage);
+    // }
 
     [Benchmark]
-    public void Propagator3()
+    public void After()
     {
         W3CBaggagePropagator3.CreateHeader(Baggage);
     }
