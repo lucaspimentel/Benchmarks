@@ -10,7 +10,7 @@ namespace BaggageImprovements6266;
 [MemoryDiagnoser]
 public class Benchmarks
 {
-    [Params(2, 5, 10)]
+    [Params(1, 5)]
     public int ItemCount { get; set; }
 
     private Baggage Baggage { get; set; }
@@ -23,6 +23,7 @@ public class Benchmarks
         for (int i = 0; i < ItemCount; i++)
         {
             Baggage[$"k{i}"] = $"v{i}";
+            // Baggage[$"k{i}"] = $"v é🐶{i}";
         }
     }
 
@@ -31,12 +32,6 @@ public class Benchmarks
     {
         W3CBaggagePropagator1.CreateHeader(Baggage);
     }
-
-    // [Benchmark]
-    // public void Propagator2()
-    // {
-    //     W3CBaggagePropagator2.CreateHeader(Baggage);
-    // }
 
     [Benchmark]
     public void After()
