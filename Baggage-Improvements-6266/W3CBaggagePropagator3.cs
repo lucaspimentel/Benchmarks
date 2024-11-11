@@ -80,7 +80,7 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
         if (!string.IsNullOrWhiteSpace(headerValue))
         {
             carrierSetter.Set(carrier, BaggageHeaderName, headerValue);
-            //TelemetryFactory.Metrics.RecordCountContextHeaderStyleInjected(MetricTags.ContextHeaderStyle.Baggage);
+            // TelemetryFactory.Metrics.RecordCountContextHeaderStyleInjected(MetricTags.ContextHeaderStyle.Baggage);
         }
     }
 
@@ -112,6 +112,13 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
             return;
         }
 
+        if (!AnyCharRequiresEncoding(source, charsToEncode))
+        {
+            // no bytes require encoding, append the source string directly
+            sb.Append(source);
+            return;
+        }
+
         // this is an upper bound and will almost always be more bytes than we need
         var maxByteCount = Encoding.UTF8.GetMaxByteCount(source.Length);
         int byteCount;
@@ -125,7 +132,7 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
 
             // slice the buffer down to the actual bytes written
             var stackBytes = stackBuffer[..byteCount];
-            EncodeBytesAndAppend(sb, source, stackBytes, charsToEncode);
+            EncodeBytesAndAppend(sb, stackBytes, charsToEncode);
             return;
         }
 #endif
@@ -139,7 +146,7 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
 
             // slice the buffer down to the actual bytes written
             var bytes = buffer.AsSpan(0, byteCount);
-            EncodeBytesAndAppend(sb, source, bytes, charsToEncode);
+            EncodeBytesAndAppend(sb, bytes, charsToEncode);
         }
         finally
         {
@@ -147,18 +154,11 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
         }
     }
 
-    private static void EncodeBytesAndAppend(StringBuilder sb, string source, Span<byte> bytes, HashSet<char> charsToEncode)
+    private static void EncodeBytesAndAppend(StringBuilder sb, Span<byte> bytes, HashSet<char> charsToEncode)
     {
-        if (!AnyCharRequiresEncoding(source, charsToEncode))
-        {
-            // no bytes require encoding
-            sb.Append(source);
-            return;
-        }
-
         foreach (var b in bytes)
         {
-            if (ByteRequiresEncoding(b, charsToEncode))
+            if (b < 0x20 || b > 0x7E || char.IsWhiteSpace((char)b) || charsToEncode.Contains((char)b))
             {
                 // encode byte as '%XX'
                 sb.Append($"%{b:X2}");
@@ -168,40 +168,19 @@ internal class W3CBaggagePropagator3 : IContextInjector, IContextExtractor
                 sb.Append((char)b);
             }
         }
+    }
 
-        return;
-
-        static bool AnyCharRequiresEncoding(string source, HashSet<char> charsToEncode)
+    internal static bool AnyCharRequiresEncoding(string source, HashSet<char> charsToEncode)
+    {
+        foreach (var c in source)
         {
-            foreach (var c in source)
+            if (c < 0x20 || c > 0x7E || char.IsWhiteSpace(c) || charsToEncode.Contains(c))
             {
-                if (c < 0x20 || c > 0x7E || char.IsWhiteSpace(c) || charsToEncode.Contains(c))
-                {
-                    return true;
-                }
+                return true;
             }
-
-            return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static bool ByteRequiresEncoding(byte b, HashSet<char> charsToEncode)
-        {
-            return b < 0x20 || b > 0x7E || char.IsWhiteSpace((char)b) || charsToEncode.Contains((char)b);
-        }
-
-        // static bool AnyByteRequiresEncoding(Span<byte> bytes, HashSet<char> charsToEncode)
-        // {
-        //     foreach (var b in bytes)
-        //     {
-        //         if (ByteRequiresEncoding(b, charsToEncode))
-        //         {
-        //             return true;
-        //         }
-        //     }
-        //
-        //     return false;
-        // }
+        return false;
     }
 
     internal static string Decode(string value)
