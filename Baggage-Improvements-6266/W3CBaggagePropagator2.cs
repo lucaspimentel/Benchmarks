@@ -75,7 +75,7 @@ internal class W3CBaggagePropagator2 : IContextInjector, IContextExtractor
         }
 
         // var settings = Tracer.Instance.Settings;
-        var headerValue = CreateHeader(baggage, DefaultMaximumBaggageItems, DefaultMaximumBaggageBytes);
+        var headerValue = CreateHeader(baggage);
 
         if (!string.IsNullOrWhiteSpace(headerValue))
         {
